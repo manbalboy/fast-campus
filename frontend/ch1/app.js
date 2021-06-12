@@ -4,10 +4,15 @@ const rootEl = document.getElementById('root');
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
 
-ajax.open('GET', NEWS_URL, false);
-ajax.send();
+const ajaxFn = function (method = 'GET', url, syncFg = false ) {
+    ajax.open(method, url, syncFg);
+    ajax.send();
 
-const newsFeed = JSON.parse(ajax.response);
+    return JSON.parse(ajax.response);
+}
+
+
+const newsFeed = ajaxFn('GET', NEWS_URL);
 
 const ulEl = document.createElement('ul');
 
@@ -15,10 +20,8 @@ const content = document.createElement('div');
 
 window.addEventListener('hashchange', function(e) {
     const id = location.hash.substr(1);
-    ajax.open('GET', CONTENT_URL.replace('@id', id), false);
-    ajax.send();
 
-    const newsContent = JSON.parse(ajax.response);
+    const newsContent = ajaxFn('GET', CONTENT_URL.replace('@id', id)); 
     const h2El = document.createElement('h1');
 
     console.dir(newsContent);
@@ -28,14 +31,17 @@ window.addEventListener('hashchange', function(e) {
 })
 
 newsFeed.forEach((item) => {
-    const liEl =  document.createElement('li');
-    const aEl =  document.createElement('a');
-    liEl.appendChild(aEl)
+    const div = document.createElement('div');
 
-    aEl.href = `#${item.id}`;
-    aEl.innerHTML = `${item.title} (${item.comments_count}) `;
+    div.innerHTML = `
+        <li>
+            <a href="#${item.id}">
+                ${item.title} (${item.comments_count})
+            </a>
+        </li>
+    `;
 
-    ulEl.appendChild(liEl);
+    ulEl.appendChild(div.children[0]);
 });
 
 rootEl.appendChild(ulEl);
