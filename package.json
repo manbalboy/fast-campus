@@ -1,0 +1,23 @@
+{
+  "name": "fast-campus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manbalboy/fast-campus.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manbalboy/fast-campus/issues"
+  },
+  "homepage": "https://github.com/manbalboy/fast-campus#readme",
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb": "^18.2.1"
+  }
+}
