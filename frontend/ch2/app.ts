@@ -3,7 +3,7 @@ interface Store {
     feeds: NewsFeed[];
 }
 
-interface News  {
+interface News {
     readonly id: number;
     readonly time_ago: string;
     readonly title: string;
@@ -38,34 +38,59 @@ const store: Store = {
     feeds: [],
 };
 
+function applyApiMixins(tagetClass:any, baseClass: any[]): void{
+    baseClass.forEach(baseClass => {
+        Object.getOwnPropertyNames(baseClass.prototype).forEach(name => {
+            const discriptor = Object.getOwnPropertyDescriptor(baseClass.prototype, name);
+
+            if(discriptor) {
+                Object.defineProperty(tagetClass.prototype, name, discriptor);
+            }
+        });
+    });
+}
+
 class Api {
-    url: string;
-    ajax : XMLHttpRequest;
+    // url: string;
+    // ajax : XMLHttpRequest;
 
-    constructor(url: string) {
-        this.url = url;
-        this.ajax = new XMLHttpRequest();
-    }
+    // constructor(url: string) {
+    //     this.url = url;
+    //     this.ajax = new XMLHttpRequest();
+    // }
 
-    protected getRequest <AjaxResponse> () : AjaxResponse{
-        this.ajax.open('GET', this.url, false);
-        this.ajax.send();
+    protected getRequest<AjaxResponse>(url: string): AjaxResponse {
+        const ajax: XMLHttpRequest = new XMLHttpRequest();
+        ajax.open('GET', url, false);
+        ajax.send();
 
-        return JSON.parse(this.ajax.response);
+        return JSON.parse(ajax.response);
     }
 }
 
-class NewsFeedApi extends Api {
+class NewsFeedApi {
     getData(): NewsFeed[] {
-        return this.getRequest<NewsFeed[]>()
+        return this.getRequest<NewsFeed[]>(NEWS_URL)
     }
 }
 
-class NewsDetailApi extends Api {
-    getData(): NewsDetail {
-        return this.getRequest<NewsDetail>();
+class NewsDetailApi {
+    getData(id: string): NewsDetail {
+        return this.getRequest<NewsDetail>(CONTENT_URL.replace('@id', id));
     }
 }
+
+interface NewsFeedApi extends Api {
+
+};
+
+interface NewsDetailApi extends Api {
+
+};
+
+
+applyApiMixins(NewsFeedApi, [Api]);
+applyApiMixins(NewsDetailApi, [Api]);
 
 
 function makeFeeds(feeds: NewsFeed[]): NewsFeed[] {
@@ -86,7 +111,7 @@ function updateView(html: string): void {
 
 
 function newsFeed(): void {
-    const api = new NewsFeedApi(NEWS_URL);
+    const api = new NewsFeedApi();
     let newsFeed: NewsFeed[] = store.feeds;
     const newsList = [];
     let template = `
@@ -149,8 +174,8 @@ function newsFeed(): void {
 function newsDetail(): void {
 
     const id = location.hash.substr(7);
-    const api = new NewsDetailApi(CONTENT_URL.replace('@id', id));
-    const newsContent = api.getData();
+    const api = new NewsDetailApi();
+    const newsContent :NewsDetail = api.getData(id);
 
     let template = `
     <div class="bg-gray-600 min-h-screen pb-8">
