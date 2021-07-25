@@ -1,57 +1,43 @@
-// function applyApiMixins(tagetClass: any, baseClass: any[]): void {
-//     baseClass.forEach(baseClass => {
-//         Object.getOwnPropertyNames(baseClass.prototype).forEach(name => {
-//             const discriptor = Object.getOwnPropertyDescriptor(baseClass.prototype, name);
-//
-//             if (discriptor) {
-//                 Object.defineProperty(tagetClass.prototype, name, discriptor);
-//             }
-//         });
-//     });
-// }
-
-// applyApiMixins(NewsFeedApi, [Api]);
-// applyApiMixins(NewsDetailApi, [Api]);
-
-// interface NewsFeedApi extends Api {
-// };
-//
-// interface NewsDetailApi extends Api {
-// };
 import View from '../core/view';
 
-export interface Store {
+export interface NewsStore {
+    getAllFeeds: () => NewsFeed[];
+    getFeed: (position: number) => NewsFeed;
+    setFeeds: (feeds: NewsFeed[]) => void;
+    makeRead: (id: number) => void;
+    hasFeeds: boolean;
     currentPage: number;
-    feeds: NewsFeed[];
+    numberOfFeed: number;
+    nextPage: number;
+    prevPage: number;
 }
 
-export  interface News {
+export interface News {
     readonly id: number;
     readonly time_ago: string;
     readonly title: string;
     readonly url: string;
     readonly user: string;
-    content: string;
+    readonly content: string;
 }
 
 export interface NewsFeed extends News {
-    comments_count: number;
-    domain: string;
-    points: number;
+    readonly points: number;
+    readonly comments_count: number;
     read?: boolean;
 }
 
 export interface NewsDetail extends News {
-    comments: NewsComment [];
+    readonly comments: NewsComment[];
 }
 
 export interface NewsComment extends News {
-    comments: NewsComment [];
-    level: number;
+    readonly comments: NewsComment[];
+    readonly level: number;
 }
 
 export interface RouteInfo {
     path: string;
     page: View;
+    params: RegExp | null;
 }
-

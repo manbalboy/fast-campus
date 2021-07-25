@@ -1,50 +1,44 @@
-
 export default abstract class View {
-    private template: string;
-    private renderTemplate: string;
-    private container: HTMLElement;
-    private htmlList: string[];
+  private container: HTMLElement;
+  private template: string;
+  private renderTemplate: string;
+  private htmlList: string[];
 
-    constructor(containerId: string, template: string) {
+  constructor(containerId: string, template: string) {
+    const conatinerElement: HTMLElement | null = document.getElementById(containerId);
 
-        const containerElement = document.getElementById(containerId);
-
-        if (!containerElement) {
-            throw '최상위 컨테이너가 없어 UI 를 진행하지 못합니다.';
-        }
-
-        this.container = containerElement;
-        this.template = template;
-        this.renderTemplate = template;
-
-        this.htmlList = [];
-
+    if (!conatinerElement) {
+      throw '최상위 컨테이너가 없어 UI를 진행하지 못합니다.';
     }
+  
+    this.container = conatinerElement;
+    this.template = template;
+    this.renderTemplate = template;
+    this.htmlList = [];
+  }
 
-    updateView(): void {
-        this.container.innerHTML = this.renderTemplate;
-        this.renderTemplate = this.template;
-    }
+  protected updateView(): void {
+    this.container.innerHTML = this.renderTemplate;
+    this.renderTemplate = this.template;
+  }
 
-    addHtml(htmlString: string): void {
-        this.htmlList.push(htmlString);
-    }
+  protected addHtml(htmlString: string): void {
+    this.htmlList.push(htmlString);
+  }
 
-    getHtml(): string {
-        const snapshot = this.htmlList.join('');
-        this.clearHtmlList();
-        return snapshot;
-    }
+  protected getHtml(): string {
+    const snapshot = this.htmlList.join('');
+    this.clearHtmlList();
+    return snapshot;
+  }
 
-    setTemplateData(key: string, value: string): void {
-        this.renderTemplate = this.renderTemplate.replace(`{{__${key}__}}`, value);
-    }
+  protected setTemplateData(key: string, value: string) {
+    this.renderTemplate = this.renderTemplate.replace(`{{__${key}__}}`, value);
+  }
 
+  private clearHtmlList() : void {
+    this.htmlList = [];
+  }
 
-    clearHtmlList(): void {
-        this.htmlList = [];
-    }
-
-    abstract render(): void;
-
+  abstract render(...params: string[]): void;
 }
